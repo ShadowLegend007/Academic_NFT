@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Decentralized Academic Plagiarism Checker</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand animate__animated animate__fadeIn" href="#">
+                <i class="fas fa-shield-alt me-2"></i>Academic NFT
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="index.html">
+                            <i class="fas fa-user-graduate me-1"></i>Student
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="teacher.html">
+                            <i class="fas fa-chalkboard-teacher me-1"></i>Teacher
+                        </a>
+                    </li>
+                </ul>
+                <button id="connectWalletBtn" class="btn btn-light animate__animated animate__fadeIn">
+                    <i class="fas fa-wallet me-2"></i>Connect Wallet
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <div class="card shadow animate__animated animate__fadeInUp">
+                    <div class="card-header bg-primary text-white">
+                        <h2 class="mb-0"><i class="fas fa-file-upload me-2"></i>Submit Academic Work</h2>
+                    </div>
+                    <div class="card-body">
+                        <div id="walletAlert" class="alert alert-warning animate__animated animate__fadeIn" role="alert">
+                            <i class="fas fa-exclamation-triangle me-2"></i>Please connect your wallet to mint your work as an NFT.
+                        </div>
+
+                        <form id="uploadForm" class="fade-in">
+                            <div class="mb-3">
+                                <label for="title" class="form-label"><i class="fas fa-heading me-2"></i>Title</label>
+                                <input type="text" class="form-control" id="title" placeholder="Enter document title" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="fileUpload" class="form-label"><i class="fas fa-file-alt me-2"></i>Upload Document (PDF, DOCX, or TXT)</label>
+                                <input class="form-control" type="file" id="fileUpload" accept=".pdf,.docx,.txt" required>
+                                <small class="text-muted mt-1 d-block"><i class="fas fa-info-circle me-1"></i>Supported formats: PDF, DOCX, TXT</small>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary" id="analyzeBtn">
+                                <i class="fas fa-search me-2"></i>Analyze Document
+                            </button>
+                        </form>
+
+                        <div id="loadingSection" class="d-none text-center my-4 animate__animated animate__fadeIn">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-2"><i class="fas fa-cog fa-spin me-2"></i>Analyzing your document...</p>
+                            <div class="progress mt-3">
+                                <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated" style="width: 0%"></div>
+                            </div>
+                            <div class="mt-2 text-muted small">This may take a moment depending on document size</div>
+                        </div>
+
+                        <div id="resultsSection" class="d-none mt-4 animate__animated animate__fadeIn">
+                            <h3 class="mb-4"><i class="fas fa-chart-bar me-2"></i>Analysis Results</h3>
+                            <div class="card mb-4 fade-in" style="animation-delay: 0.1s">
+                                <div class="card-body">
+                                    <h5 class="card-title"><i class="fas fa-percentage me-2"></i>Plagiarism Score</h5>
+                                    <div class="d-flex align-items-center mt-3">
+                                        <div class="progress flex-grow-1 me-3" style="height: 25px;">
+                                            <div id="plagiarismBar" class="progress-bar" role="progressbar" style="width: 0%"></div>
+                                        </div>
+                                        <span id="plagiarismScore" class="fs-5 fw-bold">0%</span>
+                                    </div>
+                                    <p id="plagiarismMessage" class="mt-3 mb-0"></p>
+                                </div>
+                            </div>
+
+                            <div class="card mb-4 fade-in" style="animation-delay: 0.2s">
+                                <div class="card-body">
+                                    <h5 class="card-title"><i class="fas fa-robot me-2"></i>AI-Generated Summary</h5>
+                                    <div class="mt-3">
+                                        <p id="summary" class="card-text"></p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button id="mintBtn" class="btn btn-success d-none animate__animated animate__bounceIn" style="animation-delay: 0.3s">
+                                <i class="fas fa-coins me-2"></i>Mint as NFT
+                            </button>
+                        </div>
+
+                        <div id="mintingSection" class="d-none mt-4 animate__animated animate__fadeIn">
+                            <div class="alert alert-info">
+                                <div class="d-flex align-items-center">
+                                    <div class="spinner-border spinner-border-sm me-2" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                    <span><i class="fas fa-link me-2"></i>Minting your NFT on Aptos blockchain...</span>
+                                </div>
+                                <div class="mt-2 small">Please wait while we process your transaction</div>
+                            </div>
+                        </div>
+
+                        <div id="successSection" class="d-none mt-4 animate__animated animate__fadeIn">
+                            <div class="alert alert-success">
+                                <div class="text-center mb-3">
+                                    <i class="fas fa-check-circle fa-3x text-success animate__animated animate__bounceIn"></i>
+                                </div>
+                                <h5 class="text-center mb-3">NFT Successfully Minted!</h5>
+                                <p><i class="fas fa-shield-alt me-2"></i>Your academic work has been permanently stored on IPFS and minted as an NFT on the Aptos blockchain.</p>
+                                <div class="mt-3 p-3 bg-light rounded">
+                                    <p class="mb-2"><i class="fas fa-receipt me-2"></i>Transaction Hash: <a id="txLink" href="#" target="_blank" class="text-break"></a></p>
+                                    <p class="mb-0"><i class="fas fa-database me-2"></i>IPFS Link: <a id="ipfsLink" href="#" target="_blank" class="text-break"></a></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-dark text-white text-center py-3 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <p class="mb-1"><i class="fas fa-shield-alt me-2"></i>Decentralized Academic Plagiarism Checker</p>
+                    <p class="mb-0 small">Powered by Aptos Blockchain & IPFS &copy; 2023</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@aptos-labs/wallet-adapter@1.0.0/dist/index.global.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

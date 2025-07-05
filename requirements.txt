@@ -1,0 +1,14 @@
+# Backend dependencies
+fastapi>=0.95.1,<1.0.0
+uvicorn>=0.22.0,<1.0.0
+python-multipart>=0.0.6
+pydantic>=1.10.7,<2.0.0
+numpy>=1.24.3
+scikit-learn>=1.2.2
+pyPDF2>=3.0.1
+python-docx>=0.8.11
+transformers>=4.29.2
+torch>=2.0.1
+# nft.storage>=1.5.0  # Removed due to compatibility issues with Python 3.13
+aptos-sdk>=0.7.1
+python-dotenv>=1.0.0

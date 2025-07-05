@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Dashboard - Academic NFT</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand animate__animated animate__fadeIn" href="#">
+                <i class="fas fa-shield-alt me-2"></i>Academic NFT
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">
+                            <i class="fas fa-user-graduate me-1"></i>Student
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="teacher.html">
+                            <i class="fas fa-chalkboard-teacher me-1"></i>Teacher
+                        </a>
+                    </li>
+                </ul>
+                <button id="connectWalletBtn" class="btn btn-light animate__animated animate__fadeIn">
+                    <i class="fas fa-wallet me-2"></i>Connect Wallet
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-12">
+                <div class="card shadow animate__animated animate__fadeInUp">
+                    <div class="card-header bg-primary text-white">
+                        <h2 class="mb-0"><i class="fas fa-graduation-cap me-2"></i>Student Submissions</h2>
+                    </div>
+                    <div class="card-body">
+                        <div id="walletAlert" class="alert alert-warning animate__animated animate__fadeIn" role="alert">
+                            <i class="fas fa-exclamation-triangle me-2"></i>Please connect your wallet to view student submissions and provide feedback.
+                        </div>
+
+                        <div id="loadingNfts" class="text-center my-5 d-none animate__animated animate__fadeIn">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-2"><i class="fas fa-sync fa-spin me-2"></i>Loading student submissions...</p>
+                        </div>
+
+                        <div id="nftList" class="d-none animate__animated animate__fadeIn">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th><i class="fas fa-heading me-2"></i>Title</th>
+                                            <th><i class="fas fa-percentage me-2"></i>Plagiarism Score</th>
+                                            <th><i class="fas fa-user me-2"></i>Student Address</th>
+                                            <th><i class="fas fa-clock me-2"></i>Timestamp</th>
+                                            <th><i class="fas fa-cogs me-2"></i>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="nftTableBody" class="align-middle">
+                                        <!-- NFTs will be populated here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div id="noNfts" class="alert alert-info d-none animate__animated animate__fadeIn">
+                            <i class="fas fa-info-circle me-2"></i>No student submissions found. Check back later.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NFT Details Modal -->
+    <div class="modal fade" id="nftDetailsModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title animate__animated animate__fadeInDown"><i class="fas fa-file-alt me-2"></i>Academic Work Details</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <h4 id="modalTitle" class="border-bottom pb-2 mb-4"></h4>
+                    
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <h5><i class="fas fa-percentage me-2"></i>Plagiarism Score</h5>
+                            <div class="d-flex align-items-center mt-3">
+                                <div class="progress flex-grow-1 me-3" style="height: 25px;">
+                                    <div id="modalPlagiarismBar" class="progress-bar" role="progressbar" style="width: 0%"></div>
+                                </div>
+                                <span id="modalPlagiarismScore" class="fs-5 fw-bold">0%</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h5><i class="fas fa-user-graduate me-2"></i>Student Information</h5>
+                            <div class="p-3 bg-light rounded mt-3">
+                                <p class="mb-2"><i class="fas fa-address-card me-2"></i><strong>Address:</strong> <span id="modalAddress" class="text-break"></span></p>
+                                <p class="mb-0"><i class="fas fa-calendar-alt me-2"></i><strong>Submitted:</strong> <span id="modalTimestamp"></span></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 card">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="fas fa-robot me-2"></i>AI-Generated Summary</h5>
+                            <p id="modalSummary" class="mt-3"></p>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 card">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="fas fa-link me-2"></i>Blockchain Links</h5>
+                            <div class="mt-3">
+                                <p class="mb-2"><i class="fas fa-database me-2"></i><strong>IPFS:</strong> <a id="modalIpfsLink" href="#" target="_blank" class="text-break"></a></p>
+                                <p class="mb-0"><i class="fas fa-receipt me-2"></i><strong>Transaction:</strong> <a id="modalTxLink" href="#" target="_blank" class="text-break"></a></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 card" id="previousFeedbackSection">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="fas fa-comment-alt me-2"></i>Previous Feedback</h5>
+                            <p id="modalPreviousFeedback" class="p-3 bg-light rounded mt-3">No feedback provided yet.</p>
+                        </div>
+                    </div>
+
+                    <form id="feedbackForm" class="mt-4 card">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="fas fa-pen me-2"></i>Provide Feedback</h5>
+                            <input type="hidden" id="feedbackNftId">
+                            <div class="mb-3 mt-3">
+                                <textarea class="form-control" id="feedbackText" rows="4" placeholder="Enter your feedback for this submission..." required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane me-2"></i>Submit Feedback
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-dark text-white text-center py-3 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <p class="mb-1"><i class="fas fa-shield-alt me-2"></i>Decentralized Academic Plagiarism Checker</p>
+                    <p class="mb-0 small">Powered by Aptos Blockchain & IPFS &copy; 2023</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@aptos-labs/wallet-adapter@1.0.0/dist/index.global.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
