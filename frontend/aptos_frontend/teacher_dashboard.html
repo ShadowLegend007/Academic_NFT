@@ -1,0 +1,329 @@
+<html>
+  <head>
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="" />
+    <link
+      rel="stylesheet"
+      as="style"
+      onload="this.rel='stylesheet'"
+      href="https://fonts.googleapis.com/css2?display=swap&amp;family=Noto+Sans%3Awght%40400%3B500%3B700%3B900&amp;family=Space+Grotesk%3Awght%40400%3B500%3B700"
+    />
+
+    <title>Stitch Design</title>
+    <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64," />
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  </head>
+  <body>
+    <div
+      class="relative flex size-full min-h-screen flex-col bg-[#111a22] dark group/design-root overflow-x-hidden"
+      style="font-family: 'Space Grotesk', 'Noto Sans', sans-serif"
+    >
+      <div class="layout-container flex h-full grow flex-col">
+        <header
+          class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#233748] px-10 py-3"
+        >
+          <div class="flex items-center gap-4 text-white">
+            <div class="size-4">
+              <svg
+                viewBox="0 0 48 48"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M42.4379 44C42.4379 44 36.0744 33.9038 41.1692 24C46.8624 12.9336 42.2078 4 42.2078 4L7.01134 4C7.01134 4 11.6577 12.932 5.96912 23.9969C0.876273 33.9029 7.27094 44 7.27094 44L42.4379 44Z"
+                  fill="currentColor"
+                ></path>
+              </svg>
+            </div>
+            <h2
+              class="text-white text-lg font-bold leading-tight tracking-[-0.015em]"
+            >
+              Academic NFT
+            </h2>
+          </div>
+          <div class="flex flex-1 justify-end gap-8">
+            <div class="flex items-center gap-9">
+              <a class="text-white text-sm font-medium leading-normal" href="index.html"
+                >Home</a
+              >
+              <a class="text-white text-sm font-medium leading-normal" href="about_us.html"
+                >About Us</a
+              >
+              <a class="text-white text-sm font-medium leading-normal" href="contact_us.html"
+                >Contact</a
+              >
+            </div>
+            <button
+              class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-4 bg-[#1287e7] text-white text-sm font-bold leading-normal tracking-[0.015em]"
+            >
+              <span class="truncate">Get Started</span>
+            </button>
+          </div>
+        </header>
+        <div class="px-40 flex flex-1 justify-center py-5">
+          <div
+            class="layout-content-container flex flex-col max-w-[960px] flex-1"
+          >
+            <div class="flex flex-wrap justify-between gap-3 p-4">
+              <p
+                class="text-white tracking-light text-[32px] font-bold leading-tight min-w-72"
+              >
+                Student Submissions
+              </p>
+            </div>
+            <div class="p-4">
+              <div class="flex items-stretch justify-between gap-4 rounded-xl">
+                <div class="flex flex-[2_2_0px] flex-col gap-4">
+                  <div class="flex flex-col gap-1">
+                    <p class="text-white text-base font-bold leading-tight">
+                      Connect Your Wallet
+                    </p>
+                    <p
+                      class="text-[#92b0c9] text-sm font-normal leading-normal"
+                    >
+                      To view and manage student submissions, please connect
+                      your wallet.
+                    </p>
+                  </div>
+                  <button
+                    class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-8 px-4 flex-row-reverse bg-[#233748] text-white text-sm font-medium leading-normal w-fit"
+                  >
+                    <span class="truncate">Connect Wallet</span>
+                  </button>
+                </div>
+                <div
+                  class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-xl flex-1"
+                  style="
+                    background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCPa-UsRK2WMPz6VKvJffeKJqFsqDc19x2SuLLGsPaoMMPRUkTD8vdQOX4j55vS_IH5-h9Gykx7SEmY9_3xx5VOxtKPYqatBEs0kg_Zcvp_jte2lAZu8vnrgal5HTr5k0WX3qoXLutK2Mj4HpdBl683UrpeHhvkaeaSF0yfxg-ImLgBo3xXO2nSNhTqPGq_HyTLYXQNuTlE-45FcMsEJxBmnR4G3qi9Ex2SGudpbA9uWIwSNZ4qHmSgXRCz9Xmr1yGEY2fHur9UWUsh');
+                  "
+                ></div>
+              </div>
+            </div>
+            <h2
+              class="text-white text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5"
+            >
+              Submitted Documents
+            </h2>
+            <div class="px-4 py-3 @container">
+              <div
+                class="flex overflow-hidden rounded-xl border border-[#324f67] bg-[#111a22]"
+              >
+                <table class="flex-1">
+                  <thead>
+                    <tr class="bg-[#192833]">
+                      <th
+                        class="table-0f8e9cdd-fde5-410b-b826-81d3bbefc519-column-120 px-4 py-3 text-left text-white w-[400px] text-sm font-medium leading-normal"
+                      >
+                        Student Name
+                      </th>
+                      <th
+                        class="table-0f8e9cdd-fde5-410b-b826-81d3bbefc519-column-240 px-4 py-3 text-left text-white w-[400px] text-sm font-medium leading-normal"
+                      >
+                        Document Title
+                      </th>
+                      <th
+                        class="table-0f8e9cdd-fde5-410b-b826-81d3bbefc519-column-360 px-4 py-3 text-left text-white w-[400px] text-sm font-medium leading-normal"
+                      >
+                        Submission Date
+                      </th>
+                      <th
+                        class="table-0f8e9cdd-fde5-410b-b826-81d3bbefc519-column-480 px-4 py-3 text-left text-white w-60 text-[#92b0c9] text-sm font-medium leading-normal"
+                      >
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr class="border-t border-t-[#324f67]">
+                      <td
+                        class="table-0f8e9cdd-fde5-410b-b826-81d3bbefc519-column-120 h-[72px] px-4 py-2 w-[400px] text-white text-sm font-normal leading-normal"
+                      >
+                        Ethan Walker
+                      </td>
+                      <td
+                        class="table-0f8e9cdd-fde5-410b-b826-81d3bbefc519-column-240 h-[72px] px-4 py-2 w-[400px] text-[#92b0c9] text-sm font-normal leading-normal"
+                      >
+                        Research Paper on Quantum Computing
+                      </td>
+                      <td
+                        class="table-0f8e9cdd-fde5-410b-b826-81d3bbefc519-column-360 h-[72px] px-4 py-2 w-[400px] text-[#92b0c9] text-sm font-normal leading-normal"
+                      >
+                        2024-07-26
+                      </td>
+                      <td
+                        class="table-0f8e9cdd-fde5-410b-b826-81d3bbefc519-column-480 h-[72px] px-4 py-2 w-60 text-[#92b0c9] text-sm font-bold leading-normal tracking-[0.015em]"
+                      >
+                        View | Verify | Feedback
+                      </td>
+                    </tr>
+                    <tr class="border-t border-t-[#324f67]">
+                      <td
+                        class="table-0f8e9cdd-fde5-410b-b826-81d3bbefc519-column-120 h-[72px] px-4 py-2 w-[400px] text-white text-sm font-normal leading-normal"
+                      >
+                        Olivia Hayes
+                      </td>
+                      <td
+                        class="table-0f8e9cdd-fde5-410b-b826-81d3bbefc519-column-240 h-[72px] px-4 py-2 w-[400px] text-[#92b0c9] text-sm font-normal leading-normal"
+                      >
+                        Essay on Artificial Intelligence Ethics
+                      </td>
+                      <td
+                        class="table-0f8e9cdd-fde5-410b-b826-81d3bbefc519-column-360 h-[72px] px-4 py-2 w-[400px] text-[#92b0c9] text-sm font-normal leading-normal"
+                      >
+                        2024-07-25
+                      </td>
+                      <td
+                        class="table-0f8e9cdd-fde5-410b-b826-81d3bbefc519-column-480 h-[72px] px-4 py-2 w-60 text-[#92b0c9] text-sm font-bold leading-normal tracking-[0.015em]"
+                      >
+                        View | Verify | Feedback
+                      </td>
+                    </tr>
+                    <tr class="border-t border-t-[#324f67]">
+                      <td
+                        class="table-0f8e9cdd-fde5-410b-b826-81d3bbefc519-column-120 h-[72px] px-4 py-2 w-[400px] text-white text-sm font-normal leading-normal"
+                      >
+                        Caleb Foster
+                      </td>
+                      <td
+                        class="table-0f8e9cdd-fde5-410b-b826-81d3bbefc519-column-240 h-[72px] px-4 py-2 w-[400px] text-[#92b0c9] text-sm font-normal leading-normal"
+                      >
+                        Project Proposal for Renewable Energy
+                      </td>
+                      <td
+                        class="table-0f8e9cdd-fde5-410b-b826-81d3bbefc519-column-360 h-[72px] px-4 py-2 w-[400px] text-[#92b0c9] text-sm font-normal leading-normal"
+                      >
+                        2024-07-24
+                      </td>
+                      <td
+                        class="table-0f8e9cdd-fde5-410b-b826-81d3bbefc519-column-480 h-[72px] px-4 py-2 w-60 text-[#92b0c9] text-sm font-bold leading-normal tracking-[0.015em]"
+                      >
+                        View | Verify | Feedback
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <style>
+                @container (max-width:120px) {
+                  .table-0f8e9cdd-fde5-410b-b826-81d3bbefc519-column-120 {
+                    display: none;
+                  }
+                }
+                @container (max-width:240px) {
+                  .table-0f8e9cdd-fde5-410b-b826-81d3bbefc519-column-240 {
+                    display: none;
+                  }
+                }
+                @container (max-width:360px) {
+                  .table-0f8e9cdd-fde5-410b-b826-81d3bbefc519-column-360 {
+                    display: none;
+                  }
+                }
+                @container (max-width:480px) {
+                  .table-0f8e9cdd-fde5-410b-b826-81d3bbefc519-column-480 {
+                    display: none;
+                  }
+                }
+              </style>
+            </div>
+          </div>
+        </div>
+        <footer class="flex justify-center">
+          <div class="flex max-w-[960px] flex-1 flex-col">
+            <footer
+              class="flex flex-col gap-6 px-5 py-10 text-center @container"
+            >
+              <div
+                class="flex flex-wrap items-center justify-center gap-6 @[480px]:flex-row @[480px]:justify-around"
+              >
+                <a
+                  class="text-[#92b0c9] text-base font-normal leading-normal min-w-40"
+                  href="#"
+                  >Terms &amp; Conditions</a
+                >
+                <a
+                  class="text-[#92b0c9] text-base font-normal leading-normal min-w-40"
+                  href="#"
+                  >Privacy Policy</a
+                >
+                <a
+                  class="text-[#92b0c9] text-base font-normal leading-normal min-w-40"
+                  href="#"
+                  >Contact</a
+                >
+              </div>
+              <div class="flex flex-wrap justify-center gap-4">
+                <a href="#">
+                  <div
+                    class="text-[#92b0c9]"
+                    data-icon="TwitterLogo"
+                    data-size="24px"
+                    data-weight="regular"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24px"
+                      height="24px"
+                      fill="currentColor"
+                      viewBox="0 0 256 256"
+                    >
+                      <path
+                        d="M247.39,68.94A8,8,0,0,0,240,64H209.57A48.66,48.66,0,0,0,168.1,40a46.91,46.91,0,0,0-33.75,13.7A47.9,47.9,0,0,0,120,88v6.09C79.74,83.47,46.81,50.72,46.46,50.37a8,8,0,0,0-13.65,4.92c-4.31,47.79,9.57,79.77,22,98.18a110.93,110.93,0,0,0,21.88,24.2c-15.23,17.53-39.21,26.74-39.47,26.84a8,8,0,0,0-3.85,11.93c.75,1.12,3.75,5.05,11.08,8.72C53.51,229.7,65.48,232,80,232c70.67,0,129.72-54.42,135.75-124.44l29.91-29.9A8,8,0,0,0,247.39,68.94Zm-45,29.41a8,8,0,0,0-2.32,5.14C196,166.58,143.28,216,80,216c-10.56,0-18-1.4-23.22-3.08,11.51-6.25,27.56-17,37.88-32.48A8,8,0,0,0,92,169.08c-.47-.27-43.91-26.34-44-96,16,13,45.25,33.17,78.67,38.79A8,8,0,0,0,136,104V88a32,32,0,0,1,9.6-22.92A30.94,30.94,0,0,1,167.9,56c12.66.16,24.49,7.88,29.44,19.21A8,8,0,0,0,204.67,80h16Z"
+                      ></path>
+                    </svg>
+                  </div>
+                </a>
+                <a href="#">
+                  <div
+                    class="text-[#92b0c9]"
+                    data-icon="InstagramLogo"
+                    data-size="24px"
+                    data-weight="regular"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24px"
+                      height="24px"
+                      fill="currentColor"
+                      viewBox="0 0 256 256"
+                    >
+                      <path
+                        d="M128,80a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160ZM176,24H80A56.06,56.06,0,0,0,24,80v96a56.06,56.06,0,0,0,56,56h96a56.06,56.06,0,0,0,56-56V80A56.06,56.06,0,0,0,176,24Zm40,152a40,40,0,0,1-40,40H80a40,40,0,0,1-40-40V80A40,40,0,0,1,80,40h96a40,40,0,0,1,40,40ZM192,76a12,12,0,1,1-12-12A12,12,0,0,1,192,76Z"
+                      ></path>
+                    </svg>
+                  </div>
+                </a>
+                <a href="#">
+                  <div
+                    class="text-[#92b0c9]"
+                    data-icon="LinkedinLogo"
+                    data-size="24px"
+                    data-weight="regular"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24px"
+                      height="24px"
+                      fill="currentColor"
+                      viewBox="0 0 256 256"
+                    >
+                      <path
+                        d="M216,24H40A16,16,0,0,0,24,40V216a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V40A16,16,0,0,0,216,24Zm0,192H40V40H216V216ZM96,112v64a8,8,0,0,1-16,0V112a8,8,0,0,1,16,0Zm88,28v36a8,8,0,0,1-16,0V140a20,20,0,0,0-40,0v36a8,8,0,0,1-16,0V112a8,8,0,0,1,15.79-1.78A36,36,0,0,1,184,140ZM100,84A12,12,0,1,1,88,72,12,12,0,0,1,100,84Z"
+                      ></path>
+                    </svg>
+                  </div>
+                </a>
+              </div>
+              <p class="text-[#92b0c9] text-base font-normal leading-normal">
+                © 2024 Academic NFT. All rights reserved.
+              </p>
+            </footer>
+          </div>
+        </footer>
+      </div>
+    </div>
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/app.js"></script>
+  </body>
+</html>

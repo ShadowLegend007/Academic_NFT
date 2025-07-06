@@ -3,6 +3,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 import os
 import numpy as np
 from typing import List, Tuple, Dict, Any
+from utils.plagiarism_algorithms import PlagiarismDetector
 
 # Directory containing reference documents
 # Update the corpus directory path to be relative to the backend directory
@@ -60,7 +61,7 @@ def load_corpus() -> List[str]:
 
 def check_plagiarism(text: str) -> float:
     """
-    Check document for plagiarism against corpus using TF-IDF and cosine similarity
+    Check document for plagiarism against corpus using multiple algorithms
     
     Args:
         text: The document text to check
@@ -69,55 +70,27 @@ def check_plagiarism(text: str) -> float:
         Plagiarism score between 0 and 1
     """
     try:
-        print("Starting plagiarism check...")
+        print("Starting comprehensive plagiarism check...")
+        
+        # Initialize the plagiarism detector
+        detector = PlagiarismDetector()
         
         # Load corpus
         corpus = load_corpus()
         
-        # If corpus is empty, return 0 (no plagiarism)
-        if not corpus:
-            print("Corpus is empty, returning plagiarism score of 0.0")
-            return 0.0
+        # Use comprehensive plagiarism detection
+        results = detector.check_plagiarism_comprehensive(text, corpus)
         
-        print(f"Checking document (length: {len(text)}) against {len(corpus)} corpus documents")
+        print(f"Comprehensive plagiarism check complete:")
+        print(f"  - Cosine similarity: {results['cosine_similarity']:.4f}")
+        print(f"  - File similarity: {results['file_similarity']:.2f}%")
+        print(f"  - N-gram similarity: {results['ngram_similarity']:.2f}%")
+        print(f"  - Overall score: {results['overall_score']:.4f}")
         
-        # Add the document to check to the corpus
-        all_documents = corpus + [text]
+        if results['similar_passages']:
+            print(f"  - Found {len(results['similar_passages'])} similar passages")
         
-        # Create TF-IDF vectorizer
-        vectorizer = TfidfVectorizer(stop_words='english')
-        
-        # Compute TF-IDF matrix
-        try:
-            tfidf_matrix = vectorizer.fit_transform(all_documents)
-            print(f"TF-IDF matrix shape: {tfidf_matrix.shape}")
-        except Exception as e:
-            print(f"Error computing TF-IDF matrix: {str(e)}")
-            return 0.0
-        
-        # Get the document vector (last row in the matrix)
-        document_vector = tfidf_matrix[-1]
-        
-        # Compute cosine similarity between document and each corpus document
-        similarities = []
-        for i in range(len(corpus)):
-            try:
-                corpus_vector = tfidf_matrix[i]
-                similarity = cosine_similarity(document_vector, corpus_vector)[0][0]
-                similarities.append(similarity)
-                print(f"Similarity with corpus document {i}: {similarity:.4f}")
-            except Exception as e:
-                print(f"Error computing similarity for document {i}: {str(e)}")
-        
-        # Return the maximum similarity as the plagiarism score
-        # If no similarities (empty corpus), return 0
-        if not similarities:
-            print("No similarities calculated, returning plagiarism score of 0.0")
-            return 0.0
-        
-        max_similarity = float(max(similarities))
-        print(f"Maximum plagiarism score: {max_similarity:.4f}")
-        return max_similarity
+        return results['overall_score']
         
     except Exception as e:
         print(f"Error in plagiarism check: {str(e)}")

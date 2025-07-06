@@ -1,8 +1,9 @@
-from fastapi import UploadFile, HTTPException
+from fastapi import UploadFile, HTTPException, Depends
 import os
 import PyPDF2
 import docx
 from typing import Dict, Any
+from utils.firebase_auth import require_student_role
 
 def handle_upload(file: UploadFile, file_id: str) -> Dict[str, Any]:
     """

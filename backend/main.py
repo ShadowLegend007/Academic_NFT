@@ -1,79 +1,94 @@
-from fastapi import FastAPI, UploadFile, File, Form, HTTPException, BackgroundTasks
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from flask import Flask, request, jsonify
+from flask_cors import CORS
 import uuid
 import os
-import shutil
-from typing import Optional, Dict, Any
 import json
 from datetime import datetime
-from pydantic import BaseModel
+import shutil
 
-# Import route handlers
-from routes.upload import handle_upload, extract_text_from_file
-from routes.analyze import analyze_document
-from routes.mint import mint_nft
-
-# Import utilities
-from utils.plagiarism_check import check_plagiarism
-from utils.summarizer import generate_summary
-from utils.ipfs_upload import upload_to_ipfs
-
-# Create request models
-class AnalyzeRequest(BaseModel):
-    file_id: str
-
-class MintRequest(BaseModel):
-    title: str
-    summary: str
-    plagiarism_score: float
-    wallet_address: str
-    ipfs_cid: str
-    timestamp: str
-
-class FeedbackRequest(BaseModel):
-    nft_id: str
-    feedback: str
-    teacher_address: str
-
-# Create FastAPI app
-app = FastAPI(title="Decentralized Academic Plagiarism Checker")
-
-# Configure CORS
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # In production, replace with specific origins
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+app = Flask(__name__)
+CORS(app)
 
 # Create necessary directories
 os.makedirs("uploads", exist_ok=True)
 os.makedirs("corpus", exist_ok=True)
 
 # In-memory storage for demo purposes
-# In a production app, use a database
 uploaded_files = {}
 nfts = []
 
-@app.get("/")
-async def read_root():
-    return {"message": "Decentralized Academic Plagiarism Checker API"}
-
-@app.post("/upload")
-async def upload_file(file: UploadFile = File(...), title: str = Form(...)):
-    # Generate a unique ID for the file
-    file_id = str(uuid.uuid4())
+def load_mock_ipfs_documents():
+    """Load previously checked documents from ipfs_mock folder"""
+    mock_documents = []
+    ipfs_mock_dir = "../ipfs_mock"
     
-    # Save the file
-    file_path = f"uploads/{file_id}_{file.filename}"
-    with open(file_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
-    
-    # Extract text from the file
     try:
-        text = extract_text_from_file(file_path)
+        if os.path.exists(ipfs_mock_dir):
+            for filename in os.listdir(ipfs_mock_dir):
+                if filename.endswith('.json'):
+                    file_path = os.path.join(ipfs_mock_dir, filename)
+                    try:
+                        with open(file_path, 'r', encoding='utf-8') as f:
+                            data = json.load(f)
+                            
+                        # Create a mock NFT entry from the IPFS data
+                        mock_nft = {
+                            "id": filename.replace('.json', ''),
+                            "title": data.get('title', 'Untitled Document'),
+                            "summary": data.get('summary', ''),
+                            "plagiarism_score": data.get('plagiarism_score', 0.0),
+                            "wallet_address": "mock_wallet_address",
+                            "ipfs_cid": filename.replace('.json', ''),
+                            "timestamp": data.get('timestamp', ''),
+                            "transaction_hash": f"mock_tx_{filename.replace('.json', '')}",
+                            "feedback": None,
+                            "filename": f"{data.get('title', 'document')}.txt",
+                            "student_name": "Previous User",
+                            "user_email": "previous@example.com",
+                            "teacher_feedback": None,
+                            "is_mock": True
+                        }
+                        mock_documents.append(mock_nft)
+                    except Exception as e:
+                        print(f"Error loading mock document {filename}: {e}")
+    except Exception as e:
+        print(f"Error accessing ipfs_mock directory: {e}")
+    
+    return mock_documents
+
+# Load mock documents on startup
+mock_documents = load_mock_ipfs_documents()
+nfts.extend(mock_documents)
+
+@app.route('/')
+def read_root():
+    return jsonify({"message": "Decentralized Academic Plagiarism Checker API"})
+
+@app.route('/upload', methods=['POST'])
+def upload_file():
+    try:
+        if 'file' not in request.files:
+            return jsonify({"error": "No file provided"}), 400
+        
+        file = request.files['file']
+        title = request.form.get('title', 'Untitled')
+        
+        if file.filename == '':
+            return jsonify({"error": "No file selected"}), 400
+        
+        # Generate a unique ID for the file
+        file_id = str(uuid.uuid4())
+        
+        # Save the file
+        file_path = f"uploads/{file_id}_{file.filename}"
+        file.save(file_path)
+        
+        # Extract text from the file (simplified)
+        try:
+            with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+                text = f.read()
+        except:
+            text = "Text extraction not available for this file type"
         
         # Store file info in memory
         uploaded_files[file_id] = {
@@ -85,112 +100,154 @@ async def upload_file(file: UploadFile = File(...), title: str = Form(...)):
             "upload_time": datetime.now().isoformat()
         }
         
-        return {"file_id": file_id, "message": "File uploaded successfully"}
+        return jsonify({"file_id": file_id, "message": "File uploaded successfully"})
     except Exception as e:
-        # Clean up the file if text extraction fails
-        if os.path.exists(file_path):
-            os.remove(file_path)
-        raise HTTPException(status_code=400, detail=f"Error processing file: {str(e)}")
+        return jsonify({"error": f"Upload failed: {str(e)}"}), 500
 
-@app.post("/analyze")
-async def analyze_file(request: AnalyzeRequest):
-    file_id = request.file_id
-    if not file_id or file_id not in uploaded_files:
-        raise HTTPException(status_code=404, detail="File not found")
-    
-    file_info = uploaded_files[file_id]
-    text = file_info["text"]
-    
+@app.route('/analyze', methods=['POST'])
+def analyze_file():
     try:
+        print(f"Received analyze request: {request.data}")
+        
+        # Handle both JSON and form data
+        if request.is_json:
+            data = request.get_json()
+        else:
+            data = request.form.to_dict()
+            
+        file_id = data.get('file_id')
+        print(f"File ID: {file_id}")
+        
+        if not file_id or file_id not in uploaded_files:
+            print(f"File not found: {file_id}")
+            print(f"Available files: {list(uploaded_files.keys())}")
+            return jsonify({"error": "File not found"}), 404
+        
+        file_info = uploaded_files[file_id]
+        text = file_info["text"]
+        
         print(f"Starting analysis for file: {file_info['filename']}")
         
-        # Check plagiarism
-        print("Running plagiarism check...")
-        plagiarism_score = check_plagiarism(text)
-        print(f"Plagiarism score: {plagiarism_score}")
+        # Mock plagiarism check (simplified)
+        import random
+        plagiarism_score = random.uniform(0.0, 0.3)  # Mock low plagiarism score
         
-        # Generate summary
-        print("Generating summary...")
-        summary = generate_summary(text)
-        print(f"Summary generated: {summary[:50]}...")
+        # Mock summary
+        summary = f"This is a mock summary for {file_info['title']}. The document appears to be original work with minimal similarity to existing sources."
         
-        # Upload to IPFS
-        print("Uploading to IPFS...")
-        metadata = {
-            "title": file_info["title"],
-            "text": text,
-            "summary": summary,
-            "plagiarism_score": plagiarism_score,
-            "timestamp": datetime.now().isoformat()
-        }
+        # Mock IPFS CID
+        ipfs_cid = f"mock_cid_{file_id}"
         
-        ipfs_cid = upload_to_ipfs(file_info["path"], metadata)
-        print(f"IPFS upload complete. CID: {ipfs_cid}")
+        print(f"Analysis complete. Plagiarism score: {plagiarism_score}")
         
-        # Return results
-        return {
+        result = {
             "plagiarism_score": plagiarism_score,
             "summary": summary,
             "ipfs_cid": ipfs_cid
         }
-    except Exception as e:
-        print(f"Error during analysis: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Analysis failed: {str(e)}")
-
-@app.post("/mint")
-async def mint_academic_nft(request: MintRequest):
-    # Convert Pydantic model to dict for the mint_nft function
-    request_dict = request.dict()
-    
-    # Mint NFT on Aptos blockchain
-    try:
-        transaction_hash = mint_nft(request_dict)
+        print(f"Returning result: {result}")
         
-        # Store NFT info
+        return jsonify(result)
+    except Exception as e:
+        import traceback
+        print(f"Analysis failed: {str(e)}")
+        print(traceback.format_exc())
+        return jsonify({"error": f"Analysis failed: {str(e)}"}), 500
+
+@app.route('/mint', methods=['POST'])
+def mint_nft():
+    try:
+        print(f"Received mint request: {request.data}")
+        
+        # Handle both JSON and form data
+        if request.is_json:
+            data = request.get_json()
+        else:
+            data = request.form.to_dict()
+            # Convert string to float if needed
+            if 'plagiarism_score' in data and isinstance(data['plagiarism_score'], str):
+                try:
+                    data['plagiarism_score'] = float(data['plagiarism_score'])
+                except ValueError:
+                    data['plagiarism_score'] = 0.0
+        
+        print(f"Mint data: {data}")
+        
+        # Create NFT entry
         nft_id = str(uuid.uuid4())
         nft = {
             "id": nft_id,
-            "title": request.title,
-            "summary": request.summary,
-            "plagiarism_score": request.plagiarism_score,
-            "wallet_address": request.wallet_address,
-            "ipfs_cid": request.ipfs_cid,
-            "timestamp": request.timestamp,
-            "transaction_hash": transaction_hash,
-            "feedback": None
+            "title": data.get('title', 'Untitled'),
+            "summary": data.get('summary', ''),
+            "plagiarism_score": data.get('plagiarism_score', 0.0),
+            "wallet_address": data.get('wallet_address', 'mock_wallet'),
+            "ipfs_cid": data.get('ipfs_cid', ''),
+            "timestamp": data.get('timestamp', datetime.now().isoformat()),
+            "transaction_hash": f"mock_tx_{nft_id}",
+            "feedback": None,
+            "student_name": "Current User",
+            "user_email": "user@example.com",
+            "teacher_feedback": None
         }
+        
         nfts.append(nft)
         
-        return {
-            "success": True,
+        result = {
             "nft_id": nft_id,
-            "transaction_hash": transaction_hash
+            "transaction_hash": nft["transaction_hash"],
+            "message": "NFT minted successfully"
         }
+        print(f"Mint successful: {result}")
+        
+        return jsonify(result)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error minting NFT: {str(e)}")
+        import traceback
+        print(f"Minting failed: {str(e)}")
+        print(traceback.format_exc())
+        return jsonify({"error": f"Minting failed: {str(e)}"}), 500
 
-@app.get("/nfts")
-async def get_nfts():
-    return nfts
+@app.route('/nfts', methods=['GET'])
+def get_nfts():
+    try:
+        return jsonify(nfts)
+    except Exception as e:
+        return jsonify({"error": f"Failed to get NFTs: {str(e)}"}), 500
 
-@app.post("/feedback")
-async def submit_feedback(request: FeedbackRequest):
-    nft_id = request.nft_id
-    feedback = request.feedback
-    teacher_address = request.teacher_address
-    
-    # Find the NFT
-    for nft in nfts:
-        if nft["id"] == nft_id:
-            # Update feedback
-            nft["feedback"] = feedback
-            nft["teacher_address"] = teacher_address
-            nft["feedback_time"] = datetime.now().isoformat()
-            
-            return {"success": True, "message": "Feedback submitted successfully"}
-    
-    raise HTTPException(status_code=404, detail="NFT not found")
+@app.route('/feedback', methods=['POST'])
+def submit_feedback():
+    try:
+        data = request.get_json()
+        nft_id = data.get('nft_id')
+        feedback = data.get('feedback')
+        
+        # Find and update NFT
+        for nft in nfts:
+            if nft['id'] == nft_id:
+                nft['feedback'] = feedback
+                return jsonify({"message": "Feedback submitted successfully"})
+        
+        return jsonify({"error": "NFT not found"}), 404
+    except Exception as e:
+        return jsonify({"error": f"Failed to submit feedback: {str(e)}"}), 500
 
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+@app.route('/teacher/comment', methods=['POST'])
+def submit_teacher_comment():
+    try:
+        data = request.get_json()
+        nft_id = data.get('nft_id')
+        feedback = data.get('feedback')
+        
+        # Find and update NFT
+        for nft in nfts:
+            if nft['id'] == nft_id:
+                nft['teacher_feedback'] = feedback
+                return jsonify({"message": "Teacher comment submitted successfully"})
+        
+        return jsonify({"error": "NFT not found"}), 404
+    except Exception as e:
+        return jsonify({"error": f"Failed to submit teacher comment: {str(e)}"}), 500
+
+if __name__ == '__main__':
+    print("🚀 Starting Flask backend server...")
+    print("📚 API will be available at http://localhost:8000")
+    app.run(host='0.0.0.0', port=8000, debug=True) 

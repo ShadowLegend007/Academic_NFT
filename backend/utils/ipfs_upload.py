@@ -12,32 +12,39 @@ load_dotenv()
 # Get NFT.Storage API key from environment (will be None since we're not using it)
 NFT_STORAGE_API_KEY = os.getenv("NFT_STORAGE_API_KEY")
 
-def upload_to_ipfs(file_path: str, metadata: Dict[str, Any]) -> str:
+def upload_to_ipfs(file_path: Optional[str], metadata: Dict[str, Any], text_content: Optional[str] = None) -> str:
     """
     Mock IPFS upload function that generates a deterministic CID
     
     Args:
-        file_path: Path to the file to upload
+        file_path: Path to the file to upload (optional if text_content is provided)
         metadata: Metadata to associate with the file
+        text_content: Text content to upload (optional if file_path is provided)
         
     Returns:
         IPFS CID (Content Identifier)
     """
-    if not os.path.exists(file_path):
-        raise FileNotFoundError(f"File not found: {file_path}")
-    
-    # Generate a mock CID based on file content and metadata
+    # Generate a mock CID based on content and metadata
     timestamp = int(time.time())
-    filename = os.path.basename(file_path)
     
-    # Create a unique hash based on file content and metadata
+    # Create a unique hash based on content and metadata
     content_hash = ""
-    try:
-        with open(file_path, "rb") as f:
-            file_content = f.read(1024)  # Read first 1KB for the hash
-            content_hash = hashlib.sha256(file_content).hexdigest()[:16]
-    except Exception:
-        content_hash = hashlib.sha256(filename.encode()).hexdigest()[:16]
+    
+    if text_content:
+        # Use text content for hash
+        content_hash = hashlib.sha256(text_content.encode()).hexdigest()[:16]
+    elif file_path and os.path.exists(file_path):
+        # Use file content for hash
+        filename = os.path.basename(file_path)
+        try:
+            with open(file_path, "rb") as f:
+                file_content = f.read(1024)  # Read first 1KB for the hash
+                content_hash = hashlib.sha256(file_content).hexdigest()[:16]
+        except Exception:
+            content_hash = hashlib.sha256(filename.encode()).hexdigest()[:16]
+    else:
+        # Use metadata for hash
+        content_hash = hashlib.sha256(json.dumps(metadata, sort_keys=True).encode()).hexdigest()[:16]
     
     # Create a mock CID
     mock_cid = f"bafybeih{content_hash}{timestamp}"
